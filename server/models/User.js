@@ -1,6 +1,28 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+const walletTransactionSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ['credit', 'debit'],
+    required: true
+  },
+  amount: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  description: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -28,6 +50,15 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: String,
     trim: true
+  },
+  walletBalance: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  walletTransactions: {
+    type: [walletTransactionSchema],
+    default: []
   },
   createdAt: {
     type: Date,

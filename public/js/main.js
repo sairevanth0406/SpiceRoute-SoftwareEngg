@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
+  // This script contains an SPA flow that requires a dedicated #content shell.
+  // For server-rendered EJS pages, skip SPA initialization.
+  if (!document.getElementById('content')) {
+    return;
+  }
+
   // Initialize router
   initRouter();
   
@@ -859,24 +865,30 @@ async function loadCheckoutPage() {
                     
                     <hr class="my-4">
                     
-                    <h4 class="mb-3">Payment</h4>
-                    <div class="my-3">
-                      <div class="form-check">
-                        <input id="cashOnDelivery" name="paymentMethod" type="radio" class="form-check-input" 
-                               value="Cash on Delivery" checked required>
-                        <label class="form-check-label" for="cashOnDelivery">Cash on Delivery</label>
+                    <h4 class="mb-3">Wallet</h4>
+                    <div class="alert alert-light border d-flex justify-content-between align-items-center">
+                      <span><strong>Current Wallet Balance:</strong></span>
+                      <span id="walletBalance" class="fw-bold text-success">₹${Number(user.walletBalance || 0).toFixed(2)}</span>
+                    </div>
+                    <div class="row g-2 mb-3">
+                      <div class="col-md-8">
+                        <input type="number" min="1" step="0.01" id="walletTopupAmount" class="form-control" placeholder="Enter amount to add to wallet">
                       </div>
-                      <div class="form-check">
-                        <input id="cardPayment" name="paymentMethod" type="radio" class="form-check-input" 
-                               value="Card Payment" required>
-                        <label class="form-check-label" for="cardPayment">Card Payment</label>
-                      </div>
-                      <div class="form-check">
-                        <input id="upiPayment" name="paymentMethod" type="radio" class="form-check-input" 
-                               value="UPI" required>
-                        <label class="form-check-label" for="upiPayment">UPI Payment</label>
+                      <div class="col-md-4">
+                        <button type="button" id="addWalletFundsBtn" class="btn btn-outline-success w-100">Add Funds</button>
                       </div>
                     </div>
+                    
+                    <hr class="my-4">
+                    
+                    <h4 class="mb-3">Payment</h4>
+                    <div class="my-3">
+                      <div class="alert alert-success mb-0">
+                        <i class="fas fa-wallet me-2"></i>
+                        Wallet payment is enabled for this order.
+                      </div>
+                    </div>
+                    <input type="hidden" name="paymentMethod" value="Wallet">
 
                     
                     <hr class="my-4">
@@ -915,7 +927,7 @@ async function loadCheckoutPage() {
                   
                   <div class="d-flex justify-content-between mb-3">
                     <span class="fw-bold">Total:</span>
-                    <span class="fw-bold">₹${(totalAmount + 40 + (totalAmount * 0.05)).toFixed(2)}</span>
+                    <span class="fw-bold" id="payableAmount">₹${(totalAmount + 40 + (totalAmount * 0.05)).toFixed(2)}</span>
                   </div>
                   
                   <div class="mb-3">
@@ -986,6 +998,69 @@ async function loadCheckoutPage() {
 // Initialize checkout form
 function initCheckoutForm() {
   const checkoutForm = document.getElementById('checkoutForm');
+  const walletBalanceElement = document.getElementById('walletBalance');
+  const addWalletFundsBtn = document.getElementById('addWalletFundsBtn');
+  const walletTopupAmount = document.getElementById('walletTopupAmount');
+  const payableAmountElement = document.getElementById('payableAmount');
+
+  const parseCurrency = (text) => Number((text || '').replace(/[^\d.]/g, '')) || 0;
+  const getWalletBalance = () => parseCurrency(walletBalanceElement ? walletBalanceElement.textContent : '0');
+  const getPayableAmount = () => parseCurrency(payableAmountElement ? payableAmountElement.textContent : '0');
+
+  const refreshWalletBalance = async () => {
+    const response = await fetch('/api/wallet');
+    const data = await response.json();
+    if (data.success && walletBalanceElement) {
+      walletBalanceElement.textContent = `₹${Number(data.walletBalance || 0).toFixed(2)}`;
+    }
+    return data;
+  };
+
+  if (addWalletFundsBtn && walletTopupAmount) {
+    addWalletFundsBtn.addEventListener('click', async function() {
+      const amount = Number(walletTopupAmount.value);
+      if (!Number.isFinite(amount) || amount <= 0) {
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Invalid Amount',
+          text: 'Enter a valid amount greater than 0.',
+          confirmButtonText: 'OK'
+        });
+        return;
+      }
+
+      addWalletFundsBtn.disabled = true;
+      try {
+        const response = await fetch('/api/wallet/add-funds', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount })
+        });
+        const data = await response.json();
+        if (!data.success) {
+          throw new Error(data.message || 'Failed to add funds');
+        }
+
+        await refreshWalletBalance();
+        walletTopupAmount.value = '';
+        await Swal.fire({
+          icon: 'success',
+          title: 'Wallet Updated',
+          text: 'Funds were added to your wallet successfully.',
+          confirmButtonText: 'OK'
+        });
+      } catch (error) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Wallet Update Failed',
+          text: error.message || 'Could not add funds to wallet.',
+          confirmButtonText: 'OK'
+        });
+      } finally {
+        addWalletFundsBtn.disabled = false;
+      }
+    });
+  }
   
   if (checkoutForm) {
     checkoutForm.addEventListener('submit', async function(e) {
@@ -1026,6 +1101,16 @@ function initCheckoutForm() {
             return;
           }
         }
+
+        if (getWalletBalance() < getPayableAmount()) {
+          await Swal.fire({
+            icon: 'warning',
+            title: 'Insufficient Wallet Balance',
+            text: 'Please add funds before placing your order.',
+            confirmButtonText: 'OK'
+          });
+          return;
+        }
         // Get form data
         const formData = {
           street: document.getElementById('street').value,
@@ -1034,7 +1119,7 @@ function initCheckoutForm() {
           zipCode: document.getElementById('zipCode').value,
           phone: document.getElementById('phone').value,
           dietPreference: document.querySelector('input[name="dietPreference"]:checked').value,
-          paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value
+          paymentMethod: 'Wallet'
         };
         const submitButton = checkoutForm.querySelector('button[type="submit"]');
         submitButton.disabled = true;
@@ -1052,6 +1137,7 @@ function initCheckoutForm() {
         const data = await response.json();
         
         if (data.success) {
+          await refreshWalletBalance();
           await Swal.fire({
             icon: 'success',
             title: 'Order Placed Successfully!',

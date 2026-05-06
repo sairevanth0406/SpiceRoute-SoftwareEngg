@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const MenuItem = require('../models/MenuItem');
+const User = require('../models/User');
+const { calculatePricing } = require('../utils/pricing');
 
 // Middleware to ensure cart exists in session
 const ensureCart = (req, res, next) => {
@@ -20,10 +22,12 @@ const isAuthenticated = (req, res, next) => {
 
 // View cart
 router.get('/', ensureCart, (req, res) => {
+  const subtotal = req.session.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const pricing = calculatePricing(subtotal);
   res.render('cart', {
     title: 'Shopping Cart',
     cart: req.session.cart,
-    totalAmount: req.session.cart.reduce((total, item) => total + (item.price * item.quantity), 0)
+    pricing
   });
 });
 
@@ -117,13 +121,15 @@ router.get('/checkout', isAuthenticated, ensureCart, async (req, res) => {
       return res.redirect('/cart');
     }
     
-    // Get user data for pre-filling checkout form
-    const user = await require('../models/User').findById(req.session.user.id);
+    // Get user data for pre-filling checkout form and wallet information
+    const user = await User.findById(req.session.user.id);
+    const subtotal = req.session.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const pricing = calculatePricing(subtotal);
     
     res.render('checkout', {
       title: 'Checkout',
       cart: req.session.cart,
-      totalAmount: req.session.cart.reduce((total, item) => total + (item.price * item.quantity), 0),
+      pricing,
       user,
       dietPreference: req.session.dietPreference || 'Normal'
     });

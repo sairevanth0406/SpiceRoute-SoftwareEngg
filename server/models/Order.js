@@ -45,6 +45,21 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  subtotalAmount: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  deliveryFee: {
+    type: Number,
+    required: true,
+    default: 40
+  },
+  taxAmount: {
+    type: Number,
+    required: true,
+    default: 0
+  },
   totalCalories: {
     type: Number,
     required: true,
@@ -88,8 +103,31 @@ const orderSchema = new mongoose.Schema({
   },
   paymentMethod: {
     type: String,
-    enum: ['Cash on Delivery', 'Card Payment', 'UPI'],
+    enum: ['Wallet'],
     required: true
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['Pending', 'Paid', 'Failed'],
+    default: 'Pending'
+  },
+  stegoImageData: {
+    type: Buffer,
+    default: null,
+    select: false
+  },
+  stegoImageMimeType: {
+    type: String,
+    default: null
+  },
+  stegoImageDataUrl: {
+    type: String,
+    default: null,
+    select: false
+  },
+  hiddenPayloadDigest: {
+    type: String,
+    default: null
   },
   orderDate: {
     type: Date,
