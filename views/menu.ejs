@@ -1,0 +1,101 @@
+<%- include('partials/header') %>
+
+<section class="section">
+  <div class="container">
+    <h1 class="section-title">Our Menu</h1>
+    
+    <!-- Filter Options -->
+    <div class="filter-options p-3 mb-4 bg-white rounded shadow-sm">
+      <form action="/menu" method="GET" class="row g-3">
+        <div class="col-md-5">
+          <label for="category" class="form-label">Category</label>
+          <select name="category" id="category" class="form-select" onchange="this.form.submit()">
+            <option value="All" <%= selectedCategory === 'All' ? 'selected' : '' %>>All Categories</option>
+            <% categories.forEach(category => { %>
+              <option value="<%= category %>" <%= selectedCategory === category ? 'selected' : '' %>><%= category %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-md-5">
+          <label for="vegetarian" class="form-label">Dietary Preference</label>
+          <select name="vegetarian" id="vegetarian" class="form-select" onchange="this.form.submit()">
+            <option value="All" <%= selectedVeg === 'All' ? 'selected' : '' %>>All Items</option>
+            <option value="true" <%= selectedVeg === 'true' ? 'selected' : '' %>>Vegetarian Only</option>
+            <option value="false" <%= selectedVeg === 'false' ? 'selected' : '' %>>Non-Vegetarian Only</option>
+          </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Diet Preference Toggle -->
+    <div class="diet-toggle-container mb-4">
+      <h3 class="diet-toggle-title">Select Your Diet Preference</h3>
+      <p class="diet-toggle-description">Choose between Normal or Diet option. Diet option will show calorie information for each dish.</p>
+      
+      <div class="diet-options">
+        <div class="diet-option active" data-value="Normal">
+          <i class="fas fa-utensils"></i>
+          <h5>Normal</h5>
+          <p class="small mb-0">Regular menu without calorie information</p>
+        </div>
+        <div class="diet-option" data-value="Diet">
+          <i class="fas fa-heartbeat"></i>
+          <h5>Diet</h5>
+          <p class="small mb-0">Menu with calorie information for health-conscious choices</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Menu Items -->
+    <div class="row">
+      <% if (menuItems.length === 0) { %>
+        <div class="col-12 text-center py-5">
+          <i class="fas fa-exclamation-circle fa-3x text-muted mb-3"></i>
+          <h3>No items found</h3>
+          <p>Try changing your filter options to see more items.</p>
+          <a href="/menu" class="btn btn-primary">View All Items</a>
+        </div>
+      <% } else { %>
+        <% menuItems.forEach(item => { %>
+          <div class="col-md-6 col-lg-4 mb-4 fade-in">
+            <div class="menu-item">
+              <div class="menu-item-image">
+                <img src="<%= item.image %>" alt="<%= item.name %>">
+                <span class="menu-item-badge <%= item.isVegetarian ? 'badge-veg' : 'badge-non-veg' %>">
+                  <%= item.isVegetarian ? 'Veg' : 'Non-Veg' %>
+                </span>
+              </div>
+              <div class="menu-item-content">
+                <h3 class="menu-item-title"><%= item.name %></h3>
+                <div class="menu-item-price">₹<%= item.price.toFixed(2) %></div>
+                <p class="menu-item-description"><%= item.description %></p>
+                
+                <!-- Calorie info (hidden by default, shown when Diet is selected) -->
+                <div class="calorie-info d-none">
+                  <span class="calories-badge">
+                    <i class="fas fa-fire-alt me-1"></i> <%= item.calories %> cal
+                  </span>
+                </div>
+                
+                <div class="menu-item-footer mt-3">
+                  <form action="/cart/add/<%= item._id %>" method="POST">
+                    <input type="hidden" name="quantity" value="1">
+                    <input type="hidden" name="dietPreference" id="dietPreference" value="Normal">
+                    <button type="submit" class="btn btn-primary add-to-cart-btn" data-ajax="true">
+                      <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

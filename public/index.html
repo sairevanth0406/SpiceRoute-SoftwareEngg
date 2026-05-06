@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spice Route - Authentic Indian Cuisine</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="/" onclick="navigateTo('/'); return false;">
+        <span class="brand-name">Spice Route</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/" onclick="navigateTo('/'); return false;">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/menu" onclick="navigateTo('/menu'); return false;">Menu</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a id="cartLink" class="nav-link position-relative" href="/cart" onclick="navigateTo('/cart'); return false;">
+              <i class="fas fa-shopping-cart"></i> Cart
+              <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                0
+              </span>
+            </a>
+          </li>
+          <div id="authLinks">
+            <li class="nav-item d-inline-block">
+              <a class="nav-link" href="/login" onclick="navigateTo('/login'); return false;"><i class="fas fa-sign-in-alt"></i> Login</a>
+            </li>
+            <li class="nav-item d-inline-block">
+              <a class="nav-link btn btn-sm btn-primary text-white px-3 ms-2" href="/signup" onclick="navigateTo('/signup'); return false;">Sign Up</a>
+            </li>
+          </div>
+          <div id="userMenuContainer" class="d-none">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle"></i> <span id="userName">User</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="/profile" onclick="navigateTo('/profile'); return false;">My Profile</a></li>
+                <li><a class="dropdown-item" href="/orders" onclick="navigateTo('/orders'); return false;">Order History</a></li>
+                <!-- <li><hr class="dropdown-divider"></li> -->
+                <!-- <li><a class="dropdown-item" href="#" id="navLogoutBtn">Logout</a></li> -->
+              </ul>
+            </li>
+          </div>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Container -->
+  <div id="content">
+    <!-- Content will be dynamically loaded here -->
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer mt-5 pt-5 pb-3">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <h5 class="footer-heading">Spice Route</h5>
+          <p class="text-muted">Discover the rich flavors of authentic Indian cuisine, expertly prepared and delivered right to your doorstep.</p>
+          <div class="social-icons mt-3">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-yelp"></i></a>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <h5 class="footer-heading">Quick Links</h5>
+          <ul class="list-unstyled footer-links">
+            <li><a href="/menu" onclick="navigateTo('/menu'); return false;">Menu</a></li>
+            <li><a href="/login" onclick="navigateTo('/login'); return false;">Login</a></li>
+            <li><a href="/signup" onclick="navigateTo('/signup'); return false;">Sign Up</a></li>
+          </ul>
+        </div>
+        <div class="col-md-5 mb-4">
+          <h5 class="footer-heading">Contact Us</h5>
+          <ul class="list-unstyled footer-contact">
+            <li><i class="fas fa-map-marker-alt me-2"></i> 123 Spice Lane, Flavor District, IN 56789</li>
+            <li><i class="fas fa-phone me-2"></i> +91 1234 567890</li>
+            <li><i class="fas fa-envelope me-2"></i> info@spiceroute.com</li>
+            <li><i class="fas fa-clock me-2"></i> Open: 11:00 AM - 10:00 PM</li>
+          </ul>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-md-6">
+          <p class="small text-muted mb-0">&copy; 2025 Spice Route. All rights reserved.</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p class="small text-muted mb-0">
+            <a href="#" class="text-muted">Privacy Policy</a> | 
+            <a href="#" class="text-muted">Terms of Service</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom JavaScript -->
+  <script src="/js/main.js"></script>
+</body>
+</html>

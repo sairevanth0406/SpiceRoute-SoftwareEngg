@@ -1,0 +1,55 @@
+```html
+<section class="section">
+  <div class="container">
+    <h1 class="section-title">Our Menu</h1>
+    
+    <!-- Filter Options -->
+    <div class="filter-options p-3 mb-4 bg-white rounded shadow-sm">
+      <div class="row g-3">
+        <div class="col-md-5">
+          <label for="category" class="form-label">Category</label>
+          <select id="category" class="form-select">
+            <option value="All">All Categories</option>
+            <!-- Categories will be dynamically populated -->
+          </select>
+        </div>
+        <div class="col-md-5">
+          <label for="vegetarian" class="form-label">Dietary Preference</label>
+          <select id="vegetarian" class="form-select">
+            <option value="All">All Items</option>
+            <option value="true">Vegetarian Only</option>
+            <option value="false">Non-Vegetarian Only</option>
+          </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button id="filterBtn" class="btn btn-primary w-100">Filter</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Diet Preference Toggle -->
+    <div class="diet-toggle-container mb-4">
+      <h3 class="diet-toggle-title">Select Your Diet Preference</h3>
+      <p class="diet-toggle-description">Choose between Normal or Diet option. Diet option will show calorie information for each dish.</p>
+      
+      <div class="diet-options">
+        <div class="diet-option active" data-value="Normal">
+          <i class="fas fa-utensils"></i>
+          <h5>Normal</h5>
+          <p class="small mb-0">Regular menu without calorie information</p>
+        </div>
+        <div class="diet-option" data-value="Diet">
+          <i class="fas fa-heartbeat"></i>
+          <h5>Diet</h5>
+          <p class="small mb-0">Menu with calorie information for health-conscious choices</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Menu Items -->
+    <div id="menuItemsContainer" class="row">
+      <!-- Menu items will be dynamically populated -->
+    </div>
+  </div>
+</section>
+```

@@ -1,0 +1,133 @@
+<%- include('partials/header') %>
+
+<section class="section">
+  <div class="container">
+    <h1 class="section-title">Checkout</h1>
+    
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="bg-white p-4 rounded shadow-sm mb-4">
+          <h4 class="mb-3">Delivery Information</h4>
+          
+          <form id="checkoutForm" action="/orders/place" method="POST">
+            <input type="hidden" name="dietPreference" value="<%= dietPreference %>">
+            
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="street" class="form-label">Street Address</label>
+                <input type="text" class="form-control" id="street" name="street" required 
+                  value="<%= user && user.address ? user.address.street : '' %>">
+              </div>
+              <div class="col-md-6">
+                <label for="city" class="form-label">City</label>
+                <input type="text" class="form-control" id="city" name="city" required
+                  value="<%= user && user.address ? user.address.city : '' %>">
+              </div>
+              <div class="col-md-6">
+                <label for="state" class="form-label">State</label>
+                <input type="text" class="form-control" id="state" name="state" required
+                  value="<%= user && user.address ? user.address.state : '' %>">
+              </div>
+              <div class="col-md-6">
+                <label for="zipCode" class="form-label">ZIP Code</label>
+                <input type="text" class="form-control" id="zipCode" name="zipCode" required
+                  value="<%= user && user.address ? user.address.zipCode : '' %>">
+              </div>
+              <div class="col-md-6">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" name="phone" required
+                  value="<%= user ? user.phone : '' %>">
+              </div>
+            </div>
+            
+            <hr class="my-4">
+            
+            <h4 class="mb-3">Diet Preference</h4>
+            <div class="my-3">
+              <div class="form-check">
+                <input id="normalDiet" name="dietPreference" type="radio" class="form-check-input" 
+                       value="Normal" <%= dietPreference === 'Normal' ? 'checked' : '' %> required>
+                <label class="form-check-label" for="normalDiet">Normal</label>
+              </div>
+              <div class="form-check">
+                <input id="dietOption" name="dietPreference" type="radio" class="form-check-input" 
+                       value="Diet" <%= dietPreference === 'Diet' ? 'checked' : '' %> required>
+                <label class="form-check-label" for="dietOption">Diet (Calorie conscious)</label>
+              </div>
+            </div>
+            
+            <hr class="my-4">
+            
+            <h4 class="mb-3">Payment</h4>
+            <div class="my-3">
+              <div class="form-check">
+                <input id="cashOnDelivery" name="paymentMethod" type="radio" class="form-check-input" 
+                       value="Cash on Delivery" checked required>
+                <label class="form-check-label" for="cashOnDelivery">Cash on Delivery</label>
+              </div>
+              <div class="form-check">
+                <input id="cardPayment" name="paymentMethod" type="radio" class="form-check-input" 
+                       value="Card Payment" required>
+                <label class="form-check-label" for="cardPayment">Card Payment</label>
+              </div>
+              <div class="form-check">
+                <input id="upiPayment" name="paymentMethod" type="radio" class="form-check-input" 
+                       value="UPI" required>
+                <label class="form-check-label" for="upiPayment">UPI Payment</label>
+              </div>
+            </div>
+            
+            <hr class="my-4">
+            
+            <button class="btn btn-primary btn-lg w-100" type="submit">Place Order</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="col-lg-4">
+        <div class="bg-white p-4 rounded shadow-sm sticky-top" style="top: 2rem;">
+          <h4 class="mb-3">Order Summary</h4>
+          
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal:</span>
+            <span>₹<%= totalAmount.toFixed(2) %></span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Delivery Fee:</span>
+            <span>₹40.00</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Tax (5%):</span>
+            <span>₹<%= (totalAmount * 0.05).toFixed(2) %></span>
+          </div>
+          
+          <hr>
+          
+          <div class="d-flex justify-content-between mb-3">
+            <span class="fw-bold">Total:</span>
+            <span class="fw-bold">₹<%= (totalAmount + 40 + (totalAmount * 0.05)).toFixed(2) %></span>
+          </div>
+          
+          <div class="mb-3">
+            <h5 class="mb-2">Items in Cart</h5>
+            <ul class="list-group">
+              <% cart.forEach(item => { %>
+                <li class="list-group-item d-flex justify-content-between lh-sm">
+                  <div>
+                    <h6 class="my-0"><%= item.name %> × <%= item.quantity %></h6>
+                    <small class="text-muted"><%= item.isVegetarian ? 'Vegetarian' : 'Non-Vegetarian' %></small>
+                  </div>
+                  <span>₹<%= (item.price * item.quantity).toFixed(2) %></span>
+                </li>
+              <% }); %>
+            </ul>
+          </div>
+          
+          <a href="/cart" class="btn btn-outline-secondary w-100">Edit Cart</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
